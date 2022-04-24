@@ -19,6 +19,22 @@ class TesteController extends Controller
      */
     public function index()
     {
+
+        echo "<ul>";
+        foreach (Client::with('orders')->get() as $client) {
+            echo "<h1>Pedidos do Cliente: {$client->name}</h1>";
+
+            echo "<li>#ID: {$client->id}</li>";
+            echo "<li>#Nome: {$client->name}</li>";
+            foreach ($client->orders as $order) {
+                echo "<h3>Seus Pedidos são:</h3>";
+
+                echo "<li>#Preço: {$order->price}</li>";
+                echo "<li>#Quantidade: {$order->quantity}</li><hr>";
+
+            }
+        }
+        echo "</ul>";
         /**
          * CLIENT -> ORDER
          * LISTAGEM DE TODOS OS PEDIDOS DO CLIENTE X
