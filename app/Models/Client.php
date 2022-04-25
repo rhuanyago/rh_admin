@@ -14,6 +14,11 @@ class Client extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function ordersMany()
+    {
+        return $this->belongsToMany(Order::class);
+    }
+
     public function getDocumentAttribute($value)
     {
         return substr($value, 0, 3) . '.' . substr($value, 3, 3) . '.' . substr($value, 6, 3) . '-' .  substr($value, 9, 2);

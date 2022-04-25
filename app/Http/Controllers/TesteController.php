@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Client;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\OrderStatus;
+use App\Models\StockProduct;
 use Illuminate\Http\Request;
 
 class TesteController extends Controller
@@ -20,21 +21,92 @@ class TesteController extends Controller
     public function index()
     {
 
-        echo "<ul>";
-        foreach (Client::with('orders')->get() as $client) {
-            echo "<h1>Pedidos do Cliente: {$client->name}</h1>";
+                //Disparar evento e ver como é escutado...
 
-            echo "<li>#ID: {$client->id}</li>";
-            echo "<li>#Nome: {$client->name}</li>";
-            foreach ($client->orders as $order) {
-                echo "<h3>Seus Pedidos são:</h3>";
+            // quem está escutando: UpdateRemovingItemsInStock->handle(OrderProductItems)
+        // echo '<pre>';
+        // print_r(Product::with('stock')->find(1)->quantity_in_stock);
+        // echo '</pre>';
 
-                echo "<li>#Preço: {$order->price}</li>";
-                echo "<li>#Quantidade: {$order->quantity}</li><hr>";
+        // exit;
 
-            }
+        /** Cliente com seu pedido e seus produtos */
+        // $client = Client::with('ordersMany')->find(2);
+
+        // echo "<h1>Pedidos do Cliente: {$client->name}</h1>";
+        // echo "<ul>";
+        // foreach ($client->ordersMany as $order) {
+        //     echo "<li>#ID: {$order->id}</li>";
+        //     echo "<li>#Data de Compra: {$order->purchase_date}</li>";
+        //     echo "<li>#Preço: {$order->price}</li>";
+        //     echo "<li>#Quantidade: {$order->quantity}</li><hr>";
+
+        //     echo "<h3>Os Produtos do Pedido: {$order->id} são:</h3>";
+        //     echo "<ul>";
+        //     foreach ($order->orderProducts as $product) {
+        //         echo "<li>#ID: {$product->id}</li>";
+        //         echo "<li>Categoria: {$product->categories->name}</li>";
+        //         echo "<li>Produto: {$product->name}</li>";
+        //         echo "<li>Valor: {$product->value}</li><hr>";
+        //         echo "<li>Estoque: {$product->stock->quantity_in_stock}</li><hr>";
+        //     }
+        //     echo "</ul>";
+        // }
+        // echo "</ul>";
+
+        /** Pedido através do pedido pegando o cliente com seu pedido e seus produtos */
+
+        $order = Order::with('clientMany')->find(2);
+        echo "<h3>Pedido {$order->id}:</h3>";
+
+        echo "Cliente: {$order->clientMany->first()->name}";
+
+        echo "<h3>Produtos do Pedido {$order->id}:</h3>";
+
+        foreach ($order->orderProducts as $product) {
+
+            echo "<li>#ID Produto: {$product->id}</li>";
+            echo "<li>#Data de Compra: {$product->name}</li>";
+            echo "<li>#Preço: {$product->value}</li>";
+            echo "<li>#Quantidade: {$product->pivot->quantity}</li>";
+            echo "<li>#Estoque: {$product->stock->quantity_in_stock}</li><hr>";
         }
-        echo "</ul>";
+
+        /** Removendo do Estoque */
+        // \App\Events\OrderProductItems::dispatch($order); //disparando o evento
+
+        /** Voltando para o Estoque */
+        // \App\Events\OrderProductCancelledItems::dispatch($order); //disparando o evento
+
+
+        exit;
+        // exit;
+        // echo "<ul>";
+        // foreach (Client::with('orders')->get() as $client) {
+        //     echo "<h1>Pedidos do Cliente: {$client->name}</h1>";
+        //     echo "<h3>Pedidos:</h3>";
+
+        //     foreach ($client->orders as $order) {
+
+        //         echo "<li>#ID: {$order->id}</li>";
+        //         echo "<li>#Data de Compra: {$order->purchase_date}</li>";
+        //         echo "<li>#Preço: {$order->price}</li>";
+        //         echo "<li>#Quantidade: {$order->quantity}</li><hr>";
+        //         echo "<ul>";
+
+        //         echo "<h3>Produtos do Pedido {$order->id}:</h3>";
+        //         foreach ($order->orderProducts()->get() as $product) {
+        //             echo "<li>#ID: {$product->id}</li>";
+        //             echo "<li>Categoria: {$product->categories->name}</li>";
+        //             echo "<li>Produto: {$product->name}</li>";
+        //             echo "<li>Valor: {$product->value}</li><hr>";
+        //             echo "<li>Estoque: {$product->stock->quantity_in_stock}</li><hr>";
+        //         }
+        //         echo "</ul>";
+
+        //     }
+        // }
+        // echo "</ul>";
         /**
          * CLIENT -> ORDER
          * LISTAGEM DE TODOS OS PEDIDOS DO CLIENTE X
@@ -52,6 +124,17 @@ class TesteController extends Controller
             echo "<li>#Data de Compra: {$order->purchase_date}</li>";
             echo "<li>#Preço: {$order->price}</li>";
             echo "<li>#Quantidade: {$order->quantity}</li><hr>";
+
+            echo "<h3>Os Produtos do Pedido: {$order->id} são:</h3>";
+            echo "<ul>";
+            foreach ($order->orderProducts()->get() as $product) {
+                echo "<li>#ID: {$product->id}</li>";
+                echo "<li>Categoria: {$product->categories->name}</li>";
+                echo "<li>Produto: {$product->name}</li>";
+                echo "<li>Valor: {$product->value}</li><hr>";
+                echo "<li>Estoque: {$product->stock->quantity_in_stock}</li><hr>";
+            }
+            echo "</ul>";
         }
         echo "</ul>";
 
@@ -74,9 +157,6 @@ class TesteController extends Controller
 
         echo "<h3>O Pedido #ID: {$order_id} pertence ao Cliente: {$client}</h3>";
 
-        $client = $order->client()->get()->first();
-        echo $client->name;
-
         /**
          * ORDER -> PRODUCTS
          * QUAIS SÃO OS PEDIDOS DO PRODUTO X
@@ -93,6 +173,11 @@ class TesteController extends Controller
             echo "<li>Estoque: {$product->stock->quantity_in_stock}</li><hr>";
         }
         echo "</ul>";
+
+
+        // echo '<pre>';
+        // print_r(Client::find(1)->orders->find(2)->orderProducts()->get()); exit;
+        // echo '</pre>';
 
         /**
          * ORDER -> PAYMENTS
