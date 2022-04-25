@@ -7,24 +7,21 @@
 @stop
 @section('content')
     <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-3">
-                    <x-adminlte-button label="Primary" theme="primary" icon="fas fa-key"/>
-                </div>
-            </div>
-            
+        <div class="container-fluid">            
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card card-outline card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Clientes Cadastrados</h3>
+                            <a href="#" data-toggle="modal" data-target="#modalClient" class="btn btn-sm bg-gradient-primary">
+                                <i class="fa fa-plus"></i>
+                                Novo Cliente
+                            </a>
                         </div>
 
                         <div class="card-body">
-                            <table id="clients" class="table table-striped table-bordered" style="width:100%">
+                            <table id="clients" class="table table-hover table-bordered table-colored" style="width:100%">
                                 <thead>
-                                    <tr>
+                                    <tr class="text-center">
                                         <th>Name</th>
                                         <th>E-mail</th>
                                         <th>CPF</th>
@@ -44,6 +41,8 @@
 
         </div>
 
+        @include('clients.modal.create')
+
     </section>
 @stop
 
@@ -51,11 +50,20 @@
 
 @section('js')
 <script>
+var clients;
+
 $(document).ready(function() {
-    $('#clients').DataTable({
+    var clients = $('#clients').DataTable({
         processing: true,
         serverSide: true,
-        "ajax": "{{ route('listClients') }}",
+        responsive: true,
+        scrollCollapse: true,
+        scrollX: true,
+        ajax: {
+            url: "{{ route('listClients') }}",
+            type: "GET",
+            async: true
+        },
         "columns": [
             {"data": "name"},
             {"data": "email"},
@@ -68,6 +76,8 @@ $(document).ready(function() {
             }
         ]
     });
+
+    $("#date_of_birth").inputmask("99/99/9999",{ "placeholder": "dd/mm/yyyy" });
 });
 </script>
 @endsection

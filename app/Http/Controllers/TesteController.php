@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\OrderStatus;
 use App\Models\StockProduct;
 use Illuminate\Http\Request;
+use App\Events\OrderProductItems;
 
 class TesteController extends Controller
 {
@@ -56,7 +57,7 @@ class TesteController extends Controller
 
         /** Pedido através do pedido pegando o cliente com seu pedido e seus produtos */
 
-        $order = Order::with('clientMany')->find(2);
+        $order = Order::with('clientMany')->find(3);
         echo "<h3>Pedido {$order->id}:</h3>";
 
         echo "Cliente: {$order->clientMany->first()->name}";
@@ -73,10 +74,10 @@ class TesteController extends Controller
         }
 
         /** Removendo do Estoque */
-        // \App\Events\OrderProductItems::dispatch($order); //disparando o evento
+        // OrderProductItems::dispatch($order); //disparando o evento
 
         /** Voltando para o Estoque */
-        // \App\Events\OrderProductCancelledItems::dispatch($order); //disparando o evento
+        // OrderProductCancelledItems::dispatch($order); //disparando o evento
 
 
         exit;

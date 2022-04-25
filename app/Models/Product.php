@@ -23,4 +23,9 @@ class Product extends Model
     {
         return $this->hasOne(StockProduct::class, 'product_id', 'id');
     }
+
+    public function getValueAttribute($value)
+    {
+        return number_format($value, 2, ",", ".");
+    }
 }
